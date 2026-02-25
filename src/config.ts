@@ -3,6 +3,8 @@ import * as path from "path";
 import YAML from "yaml";
 import type { GrepturConfig, Credentials } from "./types";
 
+export const CLOUD_URL = "https://app.grepture.com";
+
 const CONFIG_FILENAME = ".grepture.yml";
 const CREDENTIALS_DIR = path.join(
   process.env.HOME ?? process.env.USERPROFILE ?? "~",
