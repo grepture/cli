@@ -1,0 +1,36 @@
+# Grepture CI — GitHub Action template
+# Copy this file to .github/workflows/grepture.yml in your repository
+
+name: Grepture Security Scan
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  security-events: write  # For SARIF upload
+  contents: read
+
+jobs:
+  grepture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install Grepture
+        run: bun install -g @grepture/cli
+
+      - name: Run Grepture Scan
+        run: grepture ci --format sarif > grepture-results.sarif
+        continue-on-error: true
+
+      - name: Upload SARIF results
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: grepture-results.sarif
+          category: grepture
