@@ -2,8 +2,9 @@ import { Glob } from "bun";
 import * as path from "path";
 import * as fs from "fs";
 import ignore from "ignore";
-import type { Finding, FileScanResult, ScanResult, Severity, GrepturConfig } from "./types";
+import type { Finding, FileScanResult, ScanResult, Severity, GrepturConfig, Rule } from "./types";
 import { detectFindings, type DetectorOptions } from "./detection/detector";
+import { cloudScanFiles } from "./cloud-scanner";
 
 // Default exclude patterns (always excluded)
 const defaultExcludes = [
@@ -106,25 +107,54 @@ export async function discoverFiles(
 export async function scanFile(
   filePath: string,
   options?: DetectorOptions,
-): Promise<FileScanResult> {
+): Promise<FileScanResult & { text: string }> {
   const text = await Bun.file(filePath).text();
   const findings = detectFindings(text, filePath, options);
-  return { file: filePath, findings };
+  return { file: filePath, findings, text };
 }
 
 export async function scanFiles(
   files: string[],
   options?: DetectorOptions,
+  cloudRules?: Rule[],
 ): Promise<ScanResult> {
-  const results: FileScanResult[] = [];
+  const fileResults: FileScanResult[] = [];
   const byCategory: Record<string, number> = {};
   const bySeverity: Record<Severity, number> = { error: 0, warning: 0, info: 0 };
   let totalFindings = 0;
 
+  // Local regex scanning — collect text for cloud scanning
+  const fileTexts: Array<{ path: string; text: string }> = [];
+  const resultsByPath = new Map<string, FileScanResult>();
+
   for (const file of files) {
     const result = await scanFile(file, options);
+    fileTexts.push({ path: file, text: result.text });
+    resultsByPath.set(file, { file: result.file, findings: [...result.findings] });
+  }
+
+  // Cloud AI scanning
+  let cloudSummary;
+  if (cloudRules && cloudRules.length > 0) {
+    const cloudResult = await cloudScanFiles(fileTexts, cloudRules);
+    if (cloudResult) {
+      cloudSummary = cloudResult.summary;
+      // Merge cloud findings into results
+      for (const [filePath, cloudFindings] of cloudResult.findingsByFile) {
+        const existing = resultsByPath.get(filePath);
+        if (existing) {
+          existing.findings.push(...cloudFindings);
+        } else {
+          resultsByPath.set(filePath, { file: filePath, findings: cloudFindings });
+        }
+      }
+    }
+  }
+
+  // Aggregate results
+  for (const result of resultsByPath.values()) {
     if (result.findings.length > 0) {
-      results.push(result);
+      fileResults.push(result);
       totalFindings += result.findings.length;
       for (const f of result.findings) {
         byCategory[f.category] = (byCategory[f.category] ?? 0) + 1;
@@ -133,7 +163,7 @@ export async function scanFiles(
     }
   }
 
-  return { files: results, totalFindings, byCategory, bySeverity };
+  return { files: fileResults, totalFindings, byCategory, bySeverity, cloudSummary };
 }
 
 export function filterBySeverity(result: ScanResult, minSeverity: Severity): ScanResult {
@@ -159,5 +189,5 @@ export function filterBySeverity(result: ScanResult, minSeverity: Severity): Sca
     }
   }
 
-  return { files: filtered, totalFindings, byCategory, bySeverity };
+  return { files: filtered, totalFindings, byCategory, bySeverity, cloudSummary: result.cloudSummary };
 }

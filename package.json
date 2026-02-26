@@ -4,7 +4,6 @@
   "description": "AI security scanner for developers — Scan for PII, secrets, prompt injection, and unsafe AI SDK usage.",
   "type": "module",
   "license": "AGPL-3.0-only",
-  "author": "Grepture <hello@grepture.com> (https://grepture.com)",
   "homepage": "https://github.com/grepture/cli",
   "repository": {
     "type": "git",

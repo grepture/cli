@@ -5,3 +5,4 @@ bun.lock
 .grepture.yml
 .grepture/
 .greptureignore
+.DS_Store

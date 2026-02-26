@@ -1,0 +1,7 @@
+Summarize this customer record and add a short greeting:
+
+Name: Sarah Chen
+Email: sarah.chen@acme.com
+Phone: (415) 555-0142
+SSN: 521-44-8832
+Address: 742 Evergreen Terrace, Springfield, IL 62704

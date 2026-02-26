@@ -23,7 +23,7 @@ export function applyFixes(result: ScanResult): number {
   let fixCount = 0;
 
   for (const fileResult of result.files) {
-    const fixable = fileResult.findings.filter((f) => fixableCategories.has(f.category));
+    const fixable = fileResult.findings.filter((f) => fixableCategories.has(f.category) || f.fix);
     if (fixable.length === 0) continue;
 
     let content = fs.readFileSync(fileResult.file, "utf-8");
@@ -37,7 +37,7 @@ export function applyFixes(result: ScanResult): number {
 
     for (const finding of sorted) {
       const offset = getOffset(content, finding.line, finding.column);
-      const replacement = placeholders[finding.category] ?? "[REDACTED]";
+      const replacement = finding.fix ?? placeholders[finding.category] ?? "[REDACTED]";
       content =
         content.slice(0, offset) +
         replacement +

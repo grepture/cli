@@ -18,8 +18,11 @@ export type SecretCategory =
   | "connection_string"
   | "env_secret";
 
+// Cloud AI detection categories
+export type CloudCategory = "ai_pii" | "injection" | "toxicity" | "dlp" | "compliance";
+
 // All scannable categories
-export type DetectionCategory = PiiCategory | SecretCategory | "prompt_injection" | "unsafe_ai_usage";
+export type DetectionCategory = PiiCategory | SecretCategory | "prompt_injection" | "unsafe_ai_usage" | CloudCategory;
 
 // Severity levels for findings
 export type Severity = "error" | "warning" | "info";
@@ -45,12 +48,22 @@ export type FileScanResult = {
   findings: Finding[];
 };
 
+// Cloud scan summary
+export type CloudScanSummary = {
+  tier: string;
+  checksRun: string[];
+  checksSkipped: Array<{ check: string; reason: string }>;
+  filesScanned: number;
+  filesSkipped: number;
+};
+
 // Overall scan result
 export type ScanResult = {
   files: FileScanResult[];
   totalFindings: number;
   byCategory: Record<string, number>;
   bySeverity: Record<Severity, number>;
+  cloudSummary?: CloudScanSummary;
 };
 
 // Output format options
@@ -210,6 +223,7 @@ export type Rule = {
   conditions: RuleConditionGroup[];
   match_all: boolean;
   actions: RuleAction[];
+  order?: number;
   created_at: string;
   updated_at: string;
 };

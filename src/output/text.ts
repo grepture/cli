@@ -1,7 +1,7 @@
 import chalk from "chalk";
 import * as fs from "fs";
 import * as path from "path";
-import type { ScanResult, Finding, Severity } from "../types";
+import type { ScanResult, Finding, Severity, CloudScanSummary } from "../types";
 
 const severityColors: Record<Severity, (s: string) => string> = {
   error: chalk.red,
@@ -85,7 +85,32 @@ export function formatText(result: ScanResult, cwd: string): string {
     parts.push(chalk.blue(`${result.bySeverity.info} info`));
   }
   lines.push(`  ${result.totalFindings} finding${result.totalFindings !== 1 ? "s" : ""} (${parts.join(", ")})`);
+
+  if (result.cloudSummary) {
+    lines.push("");
+    lines.push(formatCloudSummary(result.cloudSummary));
+  }
+
   lines.push("");
+
+  return lines.join("\n");
+}
+
+function formatCloudSummary(summary: CloudScanSummary): string {
+  const lines: string[] = [];
+  lines.push(chalk.dim("  Cloud AI scan:"));
+  lines.push(chalk.dim(`    Tier: ${summary.tier}  |  Files: ${summary.filesScanned} scanned, ${summary.filesSkipped} skipped`));
+
+  if (summary.checksRun.length > 0) {
+    lines.push(chalk.dim(`    Checks run: ${summary.checksRun.join(", ")}`));
+  }
+
+  if (summary.checksSkipped.length > 0) {
+    const skippedParts = summary.checksSkipped.map(
+      (s) => `${s.check} (${s.reason.replace(/_/g, " ")})`
+    );
+    lines.push(chalk.dim(`    Checks skipped: ${skippedParts.join(", ")}`));
+  }
 
   return lines.join("\n");
 }

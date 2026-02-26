@@ -4,6 +4,7 @@ import YAML from "yaml";
 import type { GrepturConfig, Credentials } from "./types";
 
 export const CLOUD_URL = "https://app.grepture.com";
+export const PROXY_URL = process.env.GREPTURE_PROXY_URL ?? "https://proxy.grepture.com";
 
 const CONFIG_FILENAME = ".grepture.yml";
 const CREDENTIALS_DIR = path.join(

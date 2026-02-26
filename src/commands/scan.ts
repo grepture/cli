@@ -2,8 +2,9 @@ import type { Command } from "commander";
 import chalk from "chalk";
 import * as path from "path";
 import * as fs from "fs";
-import { loadConfig } from "../config";
+import { loadConfig, isAuthenticated } from "../config";
 import { discoverFiles, scanFiles, filterBySeverity } from "../scanner";
+import { loadCloudRules, extractChecksFromRules } from "../cloud-scanner";
 import { formatText } from "../output/text";
 import { formatJson } from "../output/json";
 import { formatSarif } from "../output/sarif";
@@ -42,12 +43,19 @@ export function registerScanCommand(program: Command) {
         process.exit(0);
       }
 
+      // Load cloud rules if authenticated
+      const cloudRules = isAuthenticated() ? loadCloudRules() : [];
+      const cloudChecks = extractChecksFromRules(cloudRules);
+
       // Show scanning message for text format
       if (options.format === "text") {
         console.log(chalk.dim(`\n  Scanning ${files.length} file${files.length !== 1 ? "s" : ""}...\n`));
+        if (cloudChecks.length > 0) {
+          console.log(chalk.dim(`  Cloud AI scanning enabled (${cloudChecks.join(", ")})\n`));
+        }
       }
 
-      let result = await scanFiles(files);
+      let result = await scanFiles(files, undefined, cloudRules.length > 0 ? cloudRules : undefined);
       result = filterBySeverity(result, severity);
 
       if (options.fix && result.totalFindings > 0) {
