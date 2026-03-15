@@ -8,6 +8,7 @@ import { registerRulesCommand } from "../src/commands/rules";
 import { registerLoginCommand } from "../src/commands/login";
 import { registerStatusCommand } from "../src/commands/status";
 import { registerLogsCommand } from "../src/commands/logs";
+import { registerDevCommand } from "../src/commands/dev";
 
 program
   .name("grepture")
@@ -22,5 +23,6 @@ registerRulesCommand(program);
 registerLoginCommand(program);
 registerStatusCommand(program);
 registerLogsCommand(program);
+registerDevCommand(program);
 
 program.parse();
