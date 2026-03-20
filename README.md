@@ -133,6 +133,21 @@ Test your rules against a specific file to see what gets flagged.
 
 Show current configuration, authentication state, and available features.
 
+### `grepture dev`
+
+Start a local proxy that routes AI traffic through Grepture Cloud with live observability. Requests from your app hit `localhost`, get forwarded through the cloud proxy (with your rules applied), and responses stream back. A live tail prints every request in your terminal as it happens.
+
+```sh
+grepture dev                           # Start on default port 8787
+grepture dev --port 9000               # Custom port
+grepture dev --target https://api.anthropic.com  # Default upstream provider
+grepture dev --name "search-agent"     # Label the session
+```
+
+Point your AI SDK at `http://localhost:8787` during development to get full scanning, rule enforcement, and a live traffic log without changing your production config. Sessions auto-disconnect after 15 minutes of inactivity.
+
+Requires authentication (`grepture login`).
+
 ### `grepture login` / `grepture logout`
 
 Authenticate with Grepture Cloud for advanced features (AI-powered NER, ML-based detection, team rules sync, live traffic logs).

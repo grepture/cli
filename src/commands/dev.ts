@@ -106,7 +106,7 @@ export function registerDevCommand(program: Command) {
           },
           body: JSON.stringify({
             name: options.name || null,
-            metadata: { port, hostname: (await import("os")).hostname(), cli_version: "0.1.0" },
+            metadata: { port, hostname: (await import("os")).hostname(), cli_version: (await import("../../package.json")).default.version },
           }),
         });
         if (!sessionRes.ok) {

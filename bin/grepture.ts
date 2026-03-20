@@ -1,5 +1,6 @@
 #!/usr/bin/env bun
 import { program } from "commander";
+import pkg from "../package.json";
 import { registerScanCommand } from "../src/commands/scan";
 import { registerInitCommand } from "../src/commands/init";
 import { registerHookCommand } from "../src/commands/hook";
@@ -13,7 +14,7 @@ import { registerDevCommand } from "../src/commands/dev";
 program
   .name("grepture")
   .description("AI security scanner for developers. Scan for PII, secrets, prompt injection, and unsafe AI SDK usage.")
-  .version("0.1.0");
+  .version(pkg.version);
 
 registerScanCommand(program);
 registerInitCommand(program);
