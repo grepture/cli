@@ -1,8 +1,8 @@
 # Grepture CLI
 
-An AI security scanner for developers.
+A local AI gateway for development.
 
-Scan your codebase for PII leaks, hardcoded secrets, prompt injection vulnerabilities, and unsafe AI SDK usage patterns. Works locally (free, offline) with optional cloud-powered scanning for advanced detection.
+Route your AI traffic through Grepture during development to get observability, cost tracking, PII redaction, and prompt management — without changing your production config. Also includes a standalone security scanner for catching PII leaks, hardcoded secrets, and unsafe AI patterns in your codebase.
 
 ## Install
 
@@ -13,27 +13,20 @@ bun install -g @grepture/cli
 ## Quick Start
 
 ```sh
-# Start a live dev session with observability
+# Start a local AI gateway session
 grepture dev
 
-# Initialize config in your project
-grepture init
+# Point your AI SDK at localhost
+export OPENAI_BASE_URL=http://localhost:8787/proxy
 
-# Scan your project
-grepture scan
-
-# Scan a specific file
-grepture scan src/api/chat.ts
-
-# Install git pre-commit hook
-grepture hook install
+# That's it — requests now flow through Grepture with full observability
 ```
 
 ## Commands
 
 ### `grepture dev`
 
-Start a local proxy that routes AI traffic through Grepture Cloud with live observability. Requests from your app hit `localhost`, get forwarded through the cloud proxy (with your rules applied), and responses stream back. A live tail prints every request in your terminal as it happens.
+Start a local AI gateway that routes traffic through Grepture Cloud. Requests from your app hit `localhost`, flow through the gateway (with your rules, PII redaction, and prompt management applied), and responses stream back. A live tail prints every request in your terminal as it happens.
 
 ```sh
 grepture dev                           # Start on default port 8787
@@ -42,13 +35,20 @@ grepture dev --target https://api.anthropic.com  # Default upstream provider
 grepture dev --name "search-agent"     # Label the session
 ```
 
-Point your AI SDK at `http://localhost:8787` during development to get full scanning, rule enforcement, and a live traffic log without changing your production config. Sessions auto-disconnect after 15 minutes of inactivity.
+Point your AI SDK at `http://localhost:8787` during development to get:
 
-Requires authentication (`grepture login`).
+- **Observability** — every request logged with model, tokens, latency, cost
+- **PII redaction** — sensitive data caught before it reaches the model
+- **Prompt management** — resolve managed prompts server-side
+- **Rule enforcement** — your team's rules applied in real-time
+- **Cost tracking** — see exactly what each request costs
+- **Live traffic tail** — requests printed to your terminal as they flow
+
+Sessions auto-disconnect after 15 minutes of inactivity. Requires authentication (`grepture login`).
 
 ### `grepture login` / `grepture logout`
 
-Authenticate with Grepture Cloud for advanced features (AI-powered NER, ML-based detection, team rules sync, live traffic logs).
+Authenticate with Grepture Cloud to enable the gateway and cloud-powered scanning.
 
 ```sh
 grepture login --token <your-token>
@@ -56,7 +56,7 @@ grepture login --token <your-token>
 
 ### `grepture scan [path]`
 
-Scan files for AI security risks.
+Scan files for PII, hardcoded secrets, and AI security risks.
 
 ```sh
 grepture scan                          # Scan current directory
@@ -85,29 +85,19 @@ Example output:
 
 Exit code `1` if any errors are found.
 
-### What It Detects
+#### What It Detects
 
-#### PII (Personally Identifiable Information)
-- Email addresses
-- Phone numbers (US + international)
-- Social Security Numbers
+**PII (Personally Identifiable Information)**
+- Email addresses, phone numbers (US + international), Social Security Numbers
 - Credit card numbers (Visa, Mastercard, Amex, Discover)
-- IP addresses
-- Physical addresses
-- Dates of birth
+- IP addresses, physical addresses, dates of birth
 
-#### Secrets & API Keys
-- AWS access keys
-- GitHub tokens (PAT, fine-grained)
-- OpenAI / Anthropic API keys
-- Stripe keys
-- Slack tokens
-- Generic API keys and bearer tokens
-- Private keys (RSA, EC, DSA, OpenSSH)
+**Secrets & API Keys**
+- AWS access keys, GitHub tokens, OpenAI / Anthropic API keys, Stripe keys, Slack tokens
+- Generic API keys and bearer tokens, private keys (RSA, EC, DSA, OpenSSH)
 - Database connection strings (Postgres, MySQL, MongoDB, Redis)
-- Environment variable secrets
 
-#### AI Security
+**AI Security**
 - Prompt injection patterns in template files
 - Unsafe AI SDK usage (string concatenation in prompts, `eval()` on responses, hardcoded API keys, unsanitized filesystem writes)
 
@@ -230,8 +220,11 @@ jobs:
 
 ## Free vs Cloud
 
-| Feature | Free (local) | Pro (cloud) |
-|---------|-------------|-------------|
+| Feature | Free (local) | Cloud |
+|---------|-------------|-------|
+| Local AI gateway (`dev`) | — | Yes |
+| Observability & cost tracking | — | Yes |
+| Prompt management | — | Yes |
 | Regex PII scanning | Yes | Yes |
 | Secret detection | Yes | Yes |
 | Prompt injection patterns | Yes | Yes |
@@ -241,9 +234,8 @@ jobs:
 | AI-powered NER | — | Yes |
 | ML security analysis | — | Yes |
 | Team rules sync | — | Yes |
-| Live traffic logs | — | Yes |
 
-The CLI is fully functional offline and free. Cloud features require a [Grepture](https://grepture.com) account.
+The scanner is fully functional offline and free. The gateway and cloud features require a [Grepture](https://grepture.com) account.
 
 ## Development
 
