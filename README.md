@@ -13,6 +13,9 @@ bun install -g @grepture/cli
 ## Quick Start
 
 ```sh
+# Start a live dev session with observability
+grepture dev
+
 # Initialize config in your project
 grepture init
 
@@ -25,32 +28,6 @@ grepture scan src/api/chat.ts
 # Install git pre-commit hook
 grepture hook install
 ```
-
-## What It Detects
-
-### PII (Personally Identifiable Information)
-- Email addresses
-- Phone numbers (US + international)
-- Social Security Numbers
-- Credit card numbers (Visa, Mastercard, Amex, Discover)
-- IP addresses
-- Physical addresses
-- Dates of birth
-
-### Secrets & API Keys
-- AWS access keys
-- GitHub tokens (PAT, fine-grained)
-- OpenAI / Anthropic API keys
-- Stripe keys
-- Slack tokens
-- Generic API keys and bearer tokens
-- Private keys (RSA, EC, DSA, OpenSSH)
-- Database connection strings (Postgres, MySQL, MongoDB, Redis)
-- Environment variable secrets
-
-### AI Security
-- Prompt injection patterns in template files
-- Unsafe AI SDK usage (string concatenation in prompts, `eval()` on responses, hardcoded API keys, unsanitized filesystem writes)
 
 ## Commands
 
@@ -107,6 +84,32 @@ Example output:
 ```
 
 Exit code `1` if any errors are found.
+
+### What It Detects
+
+#### PII (Personally Identifiable Information)
+- Email addresses
+- Phone numbers (US + international)
+- Social Security Numbers
+- Credit card numbers (Visa, Mastercard, Amex, Discover)
+- IP addresses
+- Physical addresses
+- Dates of birth
+
+#### Secrets & API Keys
+- AWS access keys
+- GitHub tokens (PAT, fine-grained)
+- OpenAI / Anthropic API keys
+- Stripe keys
+- Slack tokens
+- Generic API keys and bearer tokens
+- Private keys (RSA, EC, DSA, OpenSSH)
+- Database connection strings (Postgres, MySQL, MongoDB, Redis)
+- Environment variable secrets
+
+#### AI Security
+- Prompt injection patterns in template files
+- Unsafe AI SDK usage (string concatenation in prompts, `eval()` on responses, hardcoded API keys, unsanitized filesystem writes)
 
 ### `grepture init`
 
