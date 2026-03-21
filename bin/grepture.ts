@@ -16,14 +16,14 @@ program
   .description("AI security scanner for developers. Scan for PII, secrets, prompt injection, and unsafe AI SDK usage.")
   .version(pkg.version);
 
+registerDevCommand(program);
+registerLoginCommand(program);
 registerScanCommand(program);
 registerInitCommand(program);
 registerHookCommand(program);
 registerCiCommand(program);
 registerRulesCommand(program);
-registerLoginCommand(program);
 registerStatusCommand(program);
 registerLogsCommand(program);
-registerDevCommand(program);
 
 program.parse();
