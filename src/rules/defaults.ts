@@ -10,7 +10,7 @@ export const defaultRules: Rule[] = [
     enabled: true,
     apply_to: "input",
     sampling_rate: 100,
-    timeout_seconds: 60,
+    timeout_seconds: 255,
     match_all: true,
     conditions: [],
     actions: [
@@ -37,7 +37,7 @@ export const defaultRules: Rule[] = [
     enabled: true,
     apply_to: "input",
     sampling_rate: 100,
-    timeout_seconds: 60,
+    timeout_seconds: 255,
     match_all: true,
     conditions: [],
     actions: [
@@ -64,7 +64,7 @@ export const defaultRules: Rule[] = [
     enabled: true,
     apply_to: "input",
     sampling_rate: 100,
-    timeout_seconds: 60,
+    timeout_seconds: 255,
     match_all: false,
     conditions: [
       {
@@ -98,7 +98,7 @@ export const defaultRules: Rule[] = [
     enabled: true,
     apply_to: "input",
     sampling_rate: 100,
-    timeout_seconds: 60,
+    timeout_seconds: 255,
     match_all: false,
     conditions: [
       {
